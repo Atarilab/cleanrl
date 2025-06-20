@@ -197,6 +197,10 @@ poetry run pip install "stable_baselines3==2.0.0a1"
                 print(f"global_step={global_step}, episodic_return={info['episode']['r']}")
                 writer.add_scalar("charts/episodic_return", info["episode"]["r"], global_step)
                 writer.add_scalar("charts/episodic_length", info["episode"]["l"], global_step)
+                # Log individual reward components if available
+                if "reward_dict" in info:
+                    for reward_name, reward_value in info["reward_dict"].items():
+                        writer.add_scalar(f"rewards/{reward_name}", reward_value, global_step)
                 break
 
         # TRY NOT TO MODIFY: save data to reply buffer; handle `final_observation`
