@@ -13,6 +13,8 @@ import tyro
 from torch.distributions.normal import Normal
 from torch.utils.tensorboard import SummaryWriter
 
+# # Import our environment registration
+# import scripts.register_envs
 
 @dataclass
 class Args:
@@ -26,7 +28,7 @@ class Args:
     """if toggled, cuda will be enabled by default"""
     track: bool = False
     """if toggled, this experiment will be tracked with Weights and Biases"""
-    wandb_project_name: str = "cleanRL"
+    wandb_project_name: str = "mujoco_tutorial"
     """the wandb's project name"""
     wandb_entity: str = None
     """the entity (team) of wandb's project"""
@@ -228,6 +230,11 @@ if __name__ == "__main__":
                         print(f"global_step={global_step}, episodic_return={info['episode']['r']}")
                         writer.add_scalar("charts/episodic_return", info["episode"]["r"], global_step)
                         writer.add_scalar("charts/episodic_length", info["episode"]["l"], global_step)
+                        
+                        # Log individual reward components if available
+                        if "reward_dict" in info:
+                            for reward_name, reward_value in info["reward_dict"].items():
+                                writer.add_scalar(f"rewards/{reward_name}", reward_value, global_step)
 
         # bootstrap value if not done
         with torch.no_grad():
